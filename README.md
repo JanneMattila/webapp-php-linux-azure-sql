@@ -135,7 +135,7 @@ Deployment steps:
 
 1. Deploy these files to App Service for Linux
   - `/home/site/ini/extensions.ini` Additional PHP configuration for defining the SQL Server drivers
-  - `/home/site/default` Nginx custom configuration file
+  - `/home/site/nginx.conf` Nginx custom configuration file
     - Custom error page `error.html`
   - `/home/site/startup.sh` Responsible of retrieving driver `.so` files and setting up the environment
     - Download latest version of [Microsoft Drivers for PHP for Microsoft SQL Server](https://github.com/Microsoft/msphpsql)
