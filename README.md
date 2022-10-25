@@ -134,9 +134,12 @@ Stack trace:
 Deployment steps:
 
 1. Deploy these files to App Service for Linux
-  - `/home/site/ini/extensions.ini`: Additional PHP configurations defining the enable drivers
-  - `/home/site/startup.sh`: Responsible of retrieving driver `.so` files and setting up the environment
-  - `/home/site/default`: Nginx custom configuration file
+  - `/home/site/ini/extensions.ini` Additional PHP configuration for defining the SQL Server drivers
+  - `/home/site/default` Nginx custom configuration file
+    - Custom error page `error.html`
+  - `/home/site/startup.sh` Responsible of retrieving driver `.so` files and setting up the environment
+    - Download latest version of [Microsoft Drivers for PHP for Microsoft SQL Server](https://github.com/Microsoft/msphpsql)
+    - Updates Nginx configuration
 
 2. Enable `PHP_INI_SCAN_DIR` application setting for the app
   - Instructs PHP to look for additional ini files from `/home/site/ini` folder
@@ -145,6 +148,9 @@ Deployment steps:
 az webapp config appsettings set --name <app-name> --resource-group <resource-group-name> --settings PHP_INI_SCAN_DIR="/usr/local/etc/php/conf.d:/home/site/ini"
 ```
 
+![Set PHP_INI_SCAN_DIR app setting](https://user-images.githubusercontent.com/2357647/197830683-b0121256-dc2c-4b02-a6d4-d960781a009a.png)
+
+
 3. Set startup command for app
   - Guarantees that everything is configurated correctly when app is started
 
@@ -152,8 +158,15 @@ az webapp config appsettings set --name <app-name> --resource-group <resource-gr
 az webapp config set --name <app-name> --resource-group <resource-group-name> --startup-file="/home/site/startup.sh"
 ```
 
+![Set startup command for app](https://user-images.githubusercontent.com/2357647/197831083-611f47bf-3ba3-42ee-bbe0-906b8dbfe06f.png)
+
 4. Deploy your app to `/home/site/wwwroot`
   - This repo contains example files to test the connectivity from PHP to Azure SQL Database
+    - Use `https://<yourapp>.azurewebsites.net/phpinfo.php` to see PHP Info
+      - Validate, that `/home/site/ini/extensions.ini` can be found under *Additional .ini files parsed*
+      - Validate, that `pdo_sqlsrv` is installed correctly
+      - Validate, that `sqlsrv` is installed correctly
+    - Use `https://<yourapp>.azurewebsites.net/database.php` to test database drivers and connectivity
 
 ## Links
 
@@ -164,3 +177,5 @@ az webapp config set --name <app-name> --resource-group <resource-group-name> --
 [NGINX Rewrite Rules for Azure App Service Linux PHP 8.x](https://azureossd.github.io/2021/09/02/php-8-rewrite-rule/index.html)
 
 [Microsoft Drivers for PHP for Microsoft SQL Server](https://github.com/Microsoft/msphpsql)
+
+[Customize PHP_INI_SYSTEM directives](https://learn.microsoft.com/en-us/azure/app-service/configure-language-php?pivots=platform-linux#customize-php_ini_system-directives)
