@@ -12,12 +12,9 @@ server {
         index  index.php index.html index.htm hostingstart.html;
     }
 
-    # redirect server error pages to the static page /50x.html
+    # redirect server error pages to the static page /error.html
     #
-    error_page   500 502 503 504  /50x.html;
-    location = /50x.html {
-        root   /html/;
-    }
+    error_page   500 502 503 504  /error.html;
     
     # Disable .git directory
     location ~ /\.git {
