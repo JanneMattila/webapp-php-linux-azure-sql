@@ -168,6 +168,25 @@ az webapp config set --name <app-name> --resource-group <resource-group-name> --
       - Validate, that `sqlsrv` is installed correctly
     - Use `https://<yourapp>.azurewebsites.net/database.php` to test database drivers and connectivity
 
+Here is the filesystem structure under `/home/site` after the deployment (non-relevant files removed from output):
+
+```
+.
+|-- ini
+|   |-- bin
+|   |   |-- php_pdo_sqlsrv_81_nts.so
+|   |   |-- <other driver files>
+|   |   `-- php_sqlsrv_81_ts.so
+|   `-- extensions.ini
+|-- nginx.conf
+|-- startup.sh
+`-- wwwroot
+    |-- database.php
+    |-- error.html
+    |-- index.php
+    `-- phpinfo.php
+```
+
 ## Links
 
 [PHP Support timeline in App Service for Linux](https://github.com/Azure/app-service-linux-docs/blob/master/Runtime_Support/php_support.md#support-timeline)
