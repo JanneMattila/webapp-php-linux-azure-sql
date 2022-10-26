@@ -187,6 +187,23 @@ Here is the filesystem structure under `/home/site` after the deployment (non-re
     `-- phpinfo.php
 ```
 
+## Search for PHP usage using Azure Resource Graph
+
+You can search for PHP usage using Azure Resource Graph query. Here is example query (authored by [pemsft](https://github.com/pemsft)):
+
+```sql
+Resources
+| join kind=leftouter (ResourceContainers | where type=='microsoft.resources/subscriptions' | project subscriptionName=name, subscriptionId) on subscriptionId
+| where type == "microsoft.web/sites"
+| extend sites = properties.siteProperties.properties
+| mv-expand sites
+| extend sitesname = sites.name
+| extend sitesvalue = sites.value
+| project Subscription = subscriptionName, resourceGroup, appName = name, kind, OS = sitesname, codeVersion = sites.value, location, subscriptionId, tags
+```
+
+You can easily continue to filter the data in resource graph queries or then export as CSV and continue filtering in Excel.
+
 ## Links
 
 [PHP Support timeline in App Service for Linux](https://github.com/Azure/app-service-linux-docs/blob/master/Runtime_Support/php_support.md#support-timeline)
@@ -198,3 +215,5 @@ Here is the filesystem structure under `/home/site` after the deployment (non-re
 [Microsoft Drivers for PHP for Microsoft SQL Server](https://github.com/Microsoft/msphpsql)
 
 [Customize PHP_INI_SYSTEM directives](https://learn.microsoft.com/en-us/azure/app-service/configure-language-php?pivots=platform-linux#customize-php_ini_system-directives)
+
+[Q&A: php 8.1 sqlsrv extensions missing](https://learn.microsoft.com/en-us/answers/questions/1051267/php-81-sqlsrv-extensions-missing.html)
