@@ -204,6 +204,47 @@ Resources
 
 You can easily continue to filter the data in resource graph queries or then export as CSV and continue filtering in Excel.
 
+You can also use PowerShell to scan your environment:
+
+```powershell
+class WebAppData {
+    [string] $SubscriptionName
+    [string] $SubscriptionID
+    [string] $ResourceGroupName
+    [string] $Location
+    [string] $Name
+    [string] $PHPVersion
+    [string] $Tags
+}
+
+$phpApps = New-Object System.Collections.ArrayList
+$subscriptions = Get-AzSubscription
+
+foreach ($subscription in $subscriptions) {
+    Select-AzSubscription -SubscriptionID $subscription.Id
+    $webApps = Get-AzWebApp
+    foreach ($webApp in $webApps) {
+
+        $webAppDetails = Get-AzWebApp -ResourceGroupName $webApp.ResourceGroup -Name $webApp.Name
+
+        $webAppData = [WebAppData]::new()
+        $webAppData.SubscriptionName = $subscription.Name
+        $webAppData.SubscriptionID = $subscription.Id
+        $webAppData.ResourceGroupName = $webApp.ResourceGroup
+        $webAppData.Name = $webApp.Name
+        $webAppData.Location = $webApp.Location
+        $webAppData.Tags = $webApp.Tags | ConvertTo-Json -Compress
+        $webAppData.PHPVersion = $webAppDetails.SiteConfig.PhpVersion
+        
+        $phpApps.Add($webAppData)
+    }
+}
+
+$phpApps | Format-Table
+$phpApps | Export-CSV "phpapps.csv" -Force
+Write-Warning "Note: 'PHPVersion' column might report '5.6' but that does not mean that application is necessary using PHP." 
+```
+
 ## Links
 
 [PHP Support timeline in App Service for Linux](https://github.com/Azure/app-service-linux-docs/blob/master/Runtime_Support/php_support.md#support-timeline)
